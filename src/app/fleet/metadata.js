@@ -7,5 +7,5 @@ export const viewport = {
 
 export const metadata = {
   title: 'Notre Flotte - Jordyno Auto Rent',
-  description: 'Découvrez notre sélection de véhicules récents et propres à Yaoundé.',
+  description: 'Découvrez notre sélection de véhicules récents et propres à Yaoundé. Toyota, Honda, Mercedes et plus encore.',
 };
