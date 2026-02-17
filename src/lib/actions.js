@@ -1,3 +1,9 @@
+
+
+
+
+
+
 // // Server Actions pour les opérations CRUD
 // 'use server';
 
@@ -44,14 +50,41 @@
 //   await checkAdmin();
   
 //   try {
+//     // Récupérer l'image (soit uploadée soit URL)
+//     let imageUrl = formData.get('imageUrl');
+//     const imageFile = formData.get('imageFile');
+//     const imageUrlAlt = formData.get('imageUrlAlt');
+
+//     // Priorité : 
+//     // 1. Image uploadée (déjà en Base64 dans imageUrl)
+//     // 2. URL alternative
+//     // 3. Image placeholder par défaut
+//     if (!imageUrl || imageUrl === '') {
+//       if (imageUrlAlt && imageUrlAlt !== '') {
+//         imageUrl = imageUrlAlt;
+//       } else {
+//         imageUrl = '/images/placeholder-car.jpg';
+//       }
+//     }
+
+//     // Validation basique
+//     if (!imageUrl) {
+//       return { success: false, message: 'Veuillez fournir une image' };
+//     }
+
 //     const newVehicle = {
 //       marque: formData.get('marque'),
 //       modele: formData.get('modele'),
 //       prix: parseInt(formData.get('prix')),
 //       description: formData.get('description'),
-//       imageUrl: formData.get('imageUrl'),
+//       imageUrl: imageUrl,
 //       categorie: formData.get('categorie') || 'classique',
 //     };
+
+//     // Vérifier que les champs obligatoires sont remplis
+//     if (!newVehicle.marque || !newVehicle.modele || !newVehicle.prix || !newVehicle.description) {
+//       return { success: false, message: 'Tous les champs sont obligatoires' };
+//     }
 
 //     await db.insert(vehicles).values(newVehicle);
 //     revalidatePath('/fleet');
@@ -59,23 +92,30 @@
 //     return { success: true, message: 'Véhicule ajouté avec succès' };
 //   } catch (error) {
 //     console.error('Erreur lors de l\'ajout:', error);
-//     return { success: false, message: 'Erreur lors de l\'ajout du véhicule' };
+//     return { success: false, message: 'Erreur lors de l\'ajout du véhicule: ' + error.message };
 //   }
 // }
 
+// // Mettre à jour un véhicule
 // // Mettre à jour un véhicule
 // export async function updateVehicle(id, formData) {
 //   await checkAdmin();
 
 //   try {
+//     let imageUrl = formData.get('imageUrl');
+    
 //     const updatedVehicle = {
 //       marque: formData.get('marque'),
 //       modele: formData.get('modele'),
 //       prix: parseInt(formData.get('prix')),
 //       description: formData.get('description'),
-//       imageUrl: formData.get('imageUrl'),
 //       categorie: formData.get('categorie'),
 //     };
+
+//     // Ajouter l'image seulement si elle a été modifiée
+//     if (imageUrl && imageUrl !== '') {
+//       updatedVehicle.imageUrl = imageUrl;
+//     }
 
 //     await db.update(vehicles)
 //       .set(updatedVehicle)
@@ -89,7 +129,6 @@
 //     return { success: false, message: 'Erreur lors de la modification' };
 //   }
 // }
-
 // // Supprimer un véhicule
 // export async function deleteVehicle(id) {
 //   await checkAdmin();
@@ -128,52 +167,6 @@
 //   cookies().delete('admin_session');
 //   redirect('/');
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -225,41 +218,44 @@ export async function addVehicle(formData) {
   await checkAdmin();
   
   try {
-    // Récupérer l'image (soit uploadée soit URL)
-    let imageUrl = formData.get('imageUrl');
+    // Récupérer les champs texte
+    const marque = formData.get('marque');
+    const modele = formData.get('modele');
+    const prix = parseInt(formData.get('prix'));
+    const description = formData.get('description');
+    const categorie = formData.get('categorie') || 'classique';
+    
+    // Gérer l'image
+    let imageData = null;
+    let imageUrl = null;
+    
+    // Vérifier si un fichier a été uploadé
     const imageFile = formData.get('imageFile');
-    const imageUrlAlt = formData.get('imageUrlAlt');
-
-    // Priorité : 
-    // 1. Image uploadée (déjà en Base64 dans imageUrl)
-    // 2. URL alternative
-    // 3. Image placeholder par défaut
-    if (!imageUrl || imageUrl === '') {
-      if (imageUrlAlt && imageUrlAlt !== '') {
-        imageUrl = imageUrlAlt;
-      } else {
-        imageUrl = '/images/placeholder-car.jpg';
-      }
-    }
-
-    // Validation basique
-    if (!imageUrl) {
-      return { success: false, message: 'Veuillez fournir une image' };
+    const imageUrlInput = formData.get('imageUrl');
+    
+    if (imageFile && imageFile.size > 0) {
+      // C'est un fichier uploadé → le convertir en Base64
+      const bytes = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const base64 = buffer.toString('base64');
+      imageData = `data:${imageFile.type};base64,${base64}`;
+    } else if (imageUrlInput && imageUrlInput.trim() !== '') {
+      // C'est une URL
+      imageUrl = imageUrlInput;
+    } else {
+      // Image par défaut
+      imageUrl = '/images/placeholder-car.jpg';
     }
 
     const newVehicle = {
-      marque: formData.get('marque'),
-      modele: formData.get('modele'),
-      prix: parseInt(formData.get('prix')),
-      description: formData.get('description'),
-      imageUrl: imageUrl,
-      categorie: formData.get('categorie') || 'classique',
+      marque,
+      modele,
+      prix,
+      description,
+      categorie,
+      image_data: imageData,
+      image_url: imageUrl,
     };
-
-    // Vérifier que les champs obligatoires sont remplis
-    if (!newVehicle.marque || !newVehicle.modele || !newVehicle.prix || !newVehicle.description) {
-      return { success: false, message: 'Tous les champs sont obligatoires' };
-    }
 
     await db.insert(vehicles).values(newVehicle);
     revalidatePath('/fleet');
@@ -267,30 +263,51 @@ export async function addVehicle(formData) {
     return { success: true, message: 'Véhicule ajouté avec succès' };
   } catch (error) {
     console.error('Erreur lors de l\'ajout:', error);
-    return { success: false, message: 'Erreur lors de l\'ajout du véhicule: ' + error.message };
+    return { success: false, message: 'Erreur lors de l\'ajout: ' + error.message };
   }
 }
 
-// Mettre à jour un véhicule
 // Mettre à jour un véhicule
 export async function updateVehicle(id, formData) {
   await checkAdmin();
 
   try {
-    let imageUrl = formData.get('imageUrl');
+    const marque = formData.get('marque');
+    const modele = formData.get('modele');
+    const prix = parseInt(formData.get('prix'));
+    const description = formData.get('description');
+    const categorie = formData.get('categorie');
     
+    // Gérer l'image pour la mise à jour
+    let imageData = null;
+    let imageUrl = null;
+    
+    const imageFile = formData.get('imageFile');
+    const imageUrlInput = formData.get('imageUrl');
+    
+    if (imageFile && imageFile.size > 0) {
+      // Nouvelle image uploadée
+      const bytes = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      const base64 = buffer.toString('base64');
+      imageData = `data:${imageFile.type};base64,${base64}`;
+    } else if (imageUrlInput && imageUrlInput.trim() !== '') {
+      // Nouvelle URL
+      imageUrl = imageUrlInput;
+    }
+    // Si pas de nouvelle image, on garde l'ancienne (ne pas inclure dans la MAJ)
+
     const updatedVehicle = {
-      marque: formData.get('marque'),
-      modele: formData.get('modele'),
-      prix: parseInt(formData.get('prix')),
-      description: formData.get('description'),
-      categorie: formData.get('categorie'),
+      marque,
+      modele,
+      prix,
+      description,
+      categorie,
     };
 
-    // Ajouter l'image seulement si elle a été modifiée
-    if (imageUrl && imageUrl !== '') {
-      updatedVehicle.imageUrl = imageUrl;
-    }
+    // N'ajouter les champs image que s'ils ont été modifiés
+    if (imageData) updatedVehicle.image_data = imageData;
+    if (imageUrl) updatedVehicle.image_url = imageUrl;
 
     await db.update(vehicles)
       .set(updatedVehicle)
@@ -304,6 +321,7 @@ export async function updateVehicle(id, formData) {
     return { success: false, message: 'Erreur lors de la modification' };
   }
 }
+
 // Supprimer un véhicule
 export async function deleteVehicle(id) {
   await checkAdmin();
@@ -342,5 +360,3 @@ export async function logoutAdmin() {
   cookies().delete('admin_session');
   redirect('/');
 }
-
-
