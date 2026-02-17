@@ -6,6 +6,6 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: 'Connexion Admin - Jordyno Auto Rent',
-  description: 'Espace d\'administration Jordyno Auto Rent.',
+  title: 'Nos Tarifs - Jordyno Auto Rent',
+  description: 'Tarifs de location de véhicules avec chauffeur à Yaoundé.',
 };

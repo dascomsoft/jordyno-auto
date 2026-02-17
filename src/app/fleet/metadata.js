@@ -6,6 +6,6 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: 'Connexion Admin - Jordyno Auto Rent',
-  description: 'Espace d\'administration Jordyno Auto Rent.',
+  title: 'Notre Flotte - Jordyno Auto Rent',
+  description: 'Découvrez notre sélection de véhicules récents et propres à Yaoundé.',
 };

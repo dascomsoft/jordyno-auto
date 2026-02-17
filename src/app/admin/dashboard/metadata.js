@@ -6,6 +6,6 @@ export const viewport = {
 };
 
 export const metadata = {
-  title: 'Connexion Admin - Jordyno Auto Rent',
-  description: 'Espace d\'administration Jordyno Auto Rent.',
+  title: 'Dashboard Admin - Jordyno Auto Rent',
+  description: 'Gestion de la flotte de véhicules.',
 };
