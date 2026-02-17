@@ -1,4 +1,3 @@
-// En-tête du site avec logo
 'use client';
 
 import Link from 'next/link';

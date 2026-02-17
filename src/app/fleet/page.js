@@ -1,9 +1,14 @@
-// Page de la flotte de véhicules - Version Premium
+
+
+'use client';
+
+import { motion } from 'framer-motion';
 import { getVehicles } from '@/lib/actions.js';
 import VehicleCard from '@/components/VehicleCard.jsx';
 import { Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+
 
 // Composant de chargement amélioré
 function FleetLoading() {

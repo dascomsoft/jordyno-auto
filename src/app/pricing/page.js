@@ -1,4 +1,3 @@
-// Page des tarifs - Version Premium
 'use client';
 
 import { motion } from 'framer-motion';

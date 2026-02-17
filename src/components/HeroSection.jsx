@@ -1,4 +1,3 @@
-// Hero section avec image de fond
 'use client';
 
 import { motion } from 'framer-motion';

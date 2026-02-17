@@ -1,4 +1,3 @@
-// Carte véhicule avec animations
 'use client';
 
 import { motion } from 'framer-motion';

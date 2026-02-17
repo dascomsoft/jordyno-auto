@@ -1,4 +1,3 @@
-// Page de login admin
 'use client';
 
 import { motion } from 'framer-motion';
