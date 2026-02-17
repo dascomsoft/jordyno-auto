@@ -1,16 +1,11 @@
-
-
-'use client';
-
-import { motion } from 'framer-motion';
+// src/app/fleet/page.js (Server Component - pas de 'use client')
 import { getVehicles } from '@/lib/actions.js';
-import VehicleCard from '@/components/VehicleCard.jsx';
 import { Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import FleetContent from '@/components/FleetContent.jsx';
 
-
-// Composant de chargement amélioré
+// Composant de chargement (peut rester ici car il n'a pas d'interactivité)
 function FleetLoading() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -29,7 +24,7 @@ function FleetLoading() {
   );
 }
 
-// Statistiques rapides
+// Statistiques (données statiques)
 const stats = [
   { label: 'Véhicules disponibles', value: '50+', icon: '🚗' },
   { label: 'Modèles récents', value: '2024', icon: '✨' },
@@ -37,67 +32,17 @@ const stats = [
   { label: 'Chauffeurs pros', value: '24/7', icon: '⭐' },
 ];
 
-// Contenu de la flotte
-async function FleetContent() {
+// Composant asynchrone pour récupérer les données
+async function VehiclesList() {
   const vehicles = await getVehicles();
-
-  return (
-    <>
-      {vehicles.length === 0 ? (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center py-20 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl"
-        >
-          <p className="text-2xl text-gray-600">Aucun véhicule disponible pour le moment.</p>
-          <p className="text-gray-500 mt-2">Revenez bientôt ou contactez-nous directement.</p>
-          <Link 
-            href="https://wa.me/237673342789"
-            className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full mt-6 hover:bg-green-700 transition"
-          >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771z"/>
-            </svg>
-            Contactez-nous sur WhatsApp
-          </Link>
-        </motion.div>
-      ) : (
-        <>
-          {/* Filtres rapides (optionnel) */}
-          <div className="flex flex-wrap gap-3 mb-8 justify-center">
-            {['Tous', 'Classique', 'SUV', 'Prestige'].map((filter) => (
-              <button
-                key={filter}
-                className="px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-700 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-md hover:shadow-xl"
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-
-          {/* Grille des véhicules */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {vehicles.map((vehicle, index) => (
-              <VehicleCard key={vehicle.id} vehicle={vehicle} index={index} />
-            ))}
-          </div>
-
-          {/* Message de disponibilité */}
-          <div className="mt-16 text-center text-gray-500 text-sm">
-            <p>⋆ Tous nos véhicules sont livrés avec chauffeur professionnel ⋆</p>
-          </div>
-        </>
-      )}
-    </>
-  );
+  return <FleetContent vehicles={vehicles} />;
 }
 
 export default function FleetPage() {
   return (
     <div className="min-h-screen bg-gray-50 relative">
-      {/* Hero section avec image de fond */}
+      {/* Hero section (inchangée) */}
       <div className="relative bg-gradient-to-r from-blue-900/90 to-green-800/90 text-white overflow-hidden">
-        {/* Image de fond */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/carjordyno8.jpg"
@@ -107,11 +52,9 @@ export default function FleetPage() {
             priority
             quality={90}
           />
-          {/* Overlay sombre */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-green-800/90 mix-blend-multiply"></div>
         </div>
 
-        {/* Motif décoratif */}
         <div className="absolute inset-0 opacity-10 z-10">
           <div className="absolute inset-0" style={{
             backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
@@ -119,9 +62,7 @@ export default function FleetPage() {
           }}></div>
         </div>
 
-        {/* Contenu du hero */}
         <div className="relative z-20 container mx-auto px-4 py-24 md:py-32">
-          {/* Fil d'Ariane */}
           <div className="flex items-center gap-2 text-sm text-blue-200 mb-6 justify-center">
             <Link href="/" className="hover:text-white transition">Accueil</Link>
             <span>›</span>
@@ -134,16 +75,15 @@ export default function FleetPage() {
               Premium
             </span>
           </h1>
-          
+
           <p className="text-xl md:text-2xl text-center max-w-3xl mx-auto mb-12 text-blue-100 drop-shadow-lg">
-            Découvrez notre sélection de véhicules récents, propres et confortables, 
+            Découvrez notre sélection de véhicules récents, propres et confortables,
             soigneusement entretenus pour votre sécurité.
           </p>
 
-          {/* Statistiques rapides */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
-              <div 
+              <div
                 key={index}
                 className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20"
               >
@@ -155,7 +95,6 @@ export default function FleetPage() {
           </div>
         </div>
 
-        {/* Vague décorative en bas */}
         <div className="absolute bottom-0 left-0 right-0 z-20">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full h-auto fill-gray-50">
             <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"/>
@@ -165,7 +104,6 @@ export default function FleetPage() {
 
       {/* Section principale avec la liste des véhicules */}
       <div className="container mx-auto px-4 py-16 md:py-24">
-        {/* En-tête de section */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider bg-blue-50 px-4 py-2 rounded-full">
             Sélectionnez votre véhicule
@@ -174,18 +112,18 @@ export default function FleetPage() {
             Choisissez la voiture de vos rêves
           </h2>
           <p className="text-lg text-gray-600">
-            Tous nos véhicules sont récents, propres et entretenus avec soin. 
+            Tous nos véhicules sont récents, propres et entretenus avec soin.
             Chauffeur professionnel inclus dans chaque location.
           </p>
         </div>
 
-        {/* Liste des véhicules avec Suspense */}
         <Suspense fallback={<FleetLoading />}>
-          <FleetContent />
+          {/* @ts-expect-error Async Server Component */}
+          <VehiclesList />
         </Suspense>
       </div>
 
-      {/* Section CTA supplémentaire */}
+      {/* Section CTA (inchangée) */}
       <div className="bg-gradient-to-r from-blue-900 to-green-800 text-white py-16">
         <div className="container mx-auto px-4 text-center">
           <h3 className="text-3xl font-bold mb-4">
