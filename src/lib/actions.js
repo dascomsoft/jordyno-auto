@@ -38,6 +38,10 @@ export async function getFeaturedVehicles() {
     return [];
   }
 }
+
+
+
+// Ajouter un nouveau véhicule - Version corrigée
 // Ajouter un nouveau véhicule - Version corrigée
 export async function addVehicle(formData) {
   await checkAdmin();
