@@ -247,7 +247,8 @@ export async function getFeaturedVehicles() {
   }
 }
 
-// Ajouter un nouveau véhicule
+// Ajouter un nouveau véhicule Version corrigée
+
 export async function addVehicle(formData) {
   await checkAdmin();
   
@@ -259,23 +260,21 @@ export async function addVehicle(formData) {
     const description = formData.get('description');
     const categorie = formData.get('categorie') || 'classique';
     
-    // Gérer l'image
+    // Gérer l'image - On utilise UN SEUL champ "image" du formulaire
     let imageData = null;
     let imageUrl = null;
     
-    // Vérifier si un fichier a été uploadé
-    const imageFile = formData.get('imageFile');
-    const imageUrlInput = formData.get('imageUrl');
+    const imageField = formData.get('image');
     
-    if (imageFile && imageFile.size > 0) {
-      // C'est un fichier uploadé → le convertir en Base64
-      const bytes = await imageFile.arrayBuffer();
+    if (imageField && typeof imageField === 'object' && imageField.size > 0) {
+      // C'est un fichier uploadé → le convertir en Base64 pour image_data
+      const bytes = await imageField.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const base64 = buffer.toString('base64');
-      imageData = `data:${imageFile.type};base64,${base64}`;
-    } else if (imageUrlInput && imageUrlInput.trim() !== '') {
+      imageData = `data:${imageField.type};base64,${base64}`;
+    } else if (imageField && typeof imageField === 'string' && imageField.trim() !== '') {
       // C'est une URL
-      imageUrl = imageUrlInput;
+      imageUrl = imageField;
     } else {
       // Image par défaut
       imageUrl = '/images/placeholder-car.jpg';
@@ -287,8 +286,8 @@ export async function addVehicle(formData) {
       prix,
       description,
       categorie,
-      image_data: imageData,
-      image_url: imageUrl,
+      image_data: imageData,  // Sera null si c'est une URL
+      image_url: imageUrl,    // Sera null si c'est un upload
     };
 
     await db.insert(vehicles).values(newVehicle);
