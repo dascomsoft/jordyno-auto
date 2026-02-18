@@ -56,24 +56,22 @@ export async function addVehicle(formData) {
       return { success: false, message: 'Tous les champs sont obligatoires' };
     }
 
-    // Gérer l'image (comme dans votre formulaire actuel)
+    // Gérer l'image - On utilise UN SEUL champ "image" du formulaire
     let imageData = null;
     let imageUrl = null;
     
-    // Vérifier si un fichier a été uploadé
-    const imageFile = formData.get('imageFile');
-    const imageUrlInput = formData.get('imageUrl');
+    const imageField = formData.get('image');
     
-    if (imageFile && imageFile.size > 0) {
+    if (imageField && typeof imageField === 'object' && imageField.size > 0) {
       // C'est un fichier uploadé → le convertir en Base64 pour image_data
-      const bytes = await imageFile.arrayBuffer();
+      const bytes = await imageField.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const base64 = buffer.toString('base64');
-      imageData = `data:${imageFile.type};base64,${base64}`;
+      imageData = `data:${imageField.type};base64,${base64}`;
       console.log('Image uploadée convertie en Base64');
-    } else if (imageUrlInput && imageUrlInput.trim() !== '') {
+    } else if (imageField && typeof imageField === 'string' && imageField.trim() !== '') {
       // C'est une URL
-      imageUrl = imageUrlInput;
+      imageUrl = imageField;
       console.log('URL d\'image fournie:', imageUrl);
     } else {
       // Image par défaut
@@ -81,7 +79,7 @@ export async function addVehicle(formData) {
       console.log('Image par défaut utilisée');
     }
 
-    // Créer l'objet avec TOUS les champs de la table
+    // CRÉER L'OBJET AVEC TOUTES LES COLONNES DE LA TABLE
     const newVehicle = {
       marque: marque,
       modele: modele,
@@ -90,7 +88,7 @@ export async function addVehicle(formData) {
       categorie: categorie,
       image_data: imageData,
       image_url: imageUrl,
-      created_at: new Date(), // Utiliser un objet Date au lieu d'un timestamp
+      created_at: Math.floor(Date.now() / 1000), // Timestamp UNIX en secondes
     };
 
     console.log('Insertion du véhicule:', newVehicle);
