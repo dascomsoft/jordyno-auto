@@ -255,8 +255,6 @@
 
 
 
-
-
 'use client';
 
 import { motion } from 'framer-motion';
@@ -301,7 +299,7 @@ export default function HeroSection() {
   };
 
   return (
-    <div ref={containerRef} className="relative bg-gradient-to-br from-blue-900/90 via-blue-800/90 to-blue-900/90 text-white min-h-screen flex items-center overflow-hidden">
+    <div ref={containerRef} className="relative bg-gradient-to-br from-blue-900/90 via-blue-800/90 to-blue-900/90 text-white min-h-screen flex items-center overflow-hidden pt-16 sm:pt-20 pb-20">
       {/* Image de fond */}
       <div className="absolute inset-0 z-0">
         <Image
