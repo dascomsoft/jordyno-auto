@@ -40,8 +40,6 @@ export async function getFeaturedVehicles() {
 }
 
 
-
-// Ajouter un nouveau véhicule - Version corrigée
 // Ajouter un nouveau véhicule - Version corrigée
 export async function addVehicle(formData) {
   await checkAdmin();
@@ -82,7 +80,8 @@ export async function addVehicle(formData) {
       console.log('Image par défaut utilisée');
     }
 
-    // CRÉER L'OBJET AVEC TOUTES LES COLONNES DE LA TABLE
+    // CRÉER L'OBJET AVEC LES COLONNES NÉCESSAIRES
+    // created_at est automatiquement géré par $defaultFn
     const newVehicle = {
       marque: marque,
       modele: modele,
@@ -91,7 +90,8 @@ export async function addVehicle(formData) {
       categorie: categorie,
       image_data: imageData,
       image_url: imageUrl,
-      created_at: Math.floor(Date.now() / 1000), // Timestamp UNIX en secondes (nombre)
+      // 👇 SUPPRIMEZ cette ligne
+      // created_at: Math.floor(Date.now() / 1000),
     };
 
     console.log('Insertion du véhicule:', newVehicle);
@@ -105,6 +105,7 @@ export async function addVehicle(formData) {
     return { success: false, message: 'Erreur lors de l\'ajout: ' + error.message };
   }
 }
+
 
 // Mettre à jour un véhicule
 export async function updateVehicle(id, formData) {
