@@ -39,7 +39,7 @@ export async function getFeaturedVehicles() {
   }
 }
 
-// Ajouter un nouveau véhicule - Version compatible avec votre formulaire actuel
+// Ajouter un nouveau véhicule - Version corrigée
 export async function addVehicle(formData) {
   await checkAdmin();
   
@@ -90,7 +90,7 @@ export async function addVehicle(formData) {
       categorie: categorie,
       image_data: imageData,
       image_url: imageUrl,
-      created_at: Math.floor(Date.now() / 1000), // Timestamp en secondes
+      created_at: new Date(), // Utiliser un objet Date au lieu d'un timestamp
     };
 
     console.log('Insertion du véhicule:', newVehicle);
@@ -190,13 +190,25 @@ export async function loginAdmin(formData) {
     return { success: false, message: 'Email et mot de passe requis' };
   }
 
-  if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+  // Récupérer les variables d'environnement
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminEmail || !adminPassword) {
+    console.error('Variables d\'environnement ADMIN_EMAIL ou ADMIN_PASSWORD non définies');
+    return { success: false, message: 'Erreur de configuration du serveur' };
+  }
+
+  if (email === adminEmail && password === adminPassword) {
+    // Définir le cookie de session
     cookies().set('admin_session', 'authenticated', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // 24 heures
       path: '/',
     });
+    
+    // Rediriger vers le dashboard
     redirect('/admin/dashboard');
   } else {
     return { success: false, message: 'Email ou mot de passe incorrect' };
