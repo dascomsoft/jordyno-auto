@@ -317,38 +317,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Page d'accueil - Version Professionnelle Ultra-Responsive
 import { getFeaturedVehicles } from '@/lib/actions.js';
 import VehicleCard from '@/components/VehicleCard.jsx';
@@ -372,7 +340,10 @@ async function FeaturedVehicles() {
 export default function HomePage() {
   return (
     <main className="overflow-hidden">
-      <HeroSection />
+      {/* Padding-top pour éviter la superposition avec le header fixe */}
+      <div className="pt-16 sm:pt-20">
+        <HeroSection />
+      </div>
       
       {/* Section Statistiques - responsive */}
       <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-r from-blue-900 to-green-800 text-white relative overflow-hidden">
