@@ -1,95 +1,252 @@
-
-
-
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import EditVehicleModal from './EditVehicleModal.jsx';
+import { useFormStatus } from 'react-dom';
+import { addVehicle } from '@/lib/actions.js';
+import { useState } from 'react';
+import Image from 'next/image';
 
-export default function AdminVehicleActions({ vehicle }) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+// Bouton de soumission avec état de chargement
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  
+  return (
+    <motion.button
+      type="submit"
+      disabled={pending}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className={`w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition ${
+        pending ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+      }`}
+    >
+      {pending ? 'Ajout en cours...' : 'Ajouter le véhicule'}
+    </motion.button>
+  );
+}
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+export default function AdminVehicleForm() {
+  const [message, setMessage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
 
-  const handleSaveEdit = async (id, formData) => {
-    try {
-      const { updateVehicle } = await import('@/lib/actions.js');
-      const result = await updateVehicle(id, formData);
-      if (result.success) {
-        alert('Véhicule modifié avec succès !');
-        // La page se recharge grâce à revalidatePath
-      } else {
-        alert('Erreur : ' + result.message);
-      }
-    } catch (error) {
-      alert('Erreur lors de la modification');
+  // Gérer la sélection de fichier
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      
+      // Créer une prévisualisation
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer ${vehicle.marque} ${vehicle.modele} ?`)) {
-      return;
+  async function handleSubmit(formData) {
+    // 🔴 CORRECTION : Ne pas utiliser imageUrl pour l'upload
+    // Supprimer toute valeur imageUrl existante
+    formData.delete('imageUrl');
+    
+    // Ajouter le fichier image au formData si présent
+    if (imageFile) {
+      formData.set('imageFile', imageFile); // ← C'est la clé attendue par actions.js
     }
 
-    setIsDeleting(true);
-    try {
-      const { deleteVehicle } = await import('@/lib/actions.js');
-      const result = await deleteVehicle(vehicle.id);
-      if (result.success) {
-        alert('Véhicule supprimé avec succès !');
-      } else {
-        alert('Erreur : ' + result.message);
-      }
-    } catch (error) {
-      alert('Erreur : ' + error.message);
-    } finally {
-      setIsDeleting(false);
+    // Si une URL alternative est fournie, l'ajouter
+    const imageUrlAlt = formData.get('imageUrlAlt');
+    if (imageUrlAlt && imageUrlAlt.trim() !== '') {
+      formData.set('imageUrl', imageUrlAlt);
     }
-  };
+
+    const result = await addVehicle(formData);
+    setMessage(result);
+    
+    if (result.success) {
+      // Réinitialiser le formulaire
+      document.getElementById('vehicleForm').reset();
+      setImagePreview(null);
+      setImageFile(null);
+    }
+  }
 
   return (
-    <>
-      <div className="absolute top-2 right-2 flex gap-2">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={handleEdit}
-          className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition"
-          title="Modifier"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-        </motion.button>
-        
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className={`bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition ${
-            isDeleting ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          title="Supprimer"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-        </motion.button>
+    <form id="vehicleForm" action={handleSubmit} className="space-y-4">
+      {/* Message de retour */}
+      {message && (
+        <div className={`p-4 rounded-lg ${
+          message.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+        }`}>
+          {message.message}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Marque */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Marque
+          </label>
+          <input
+            type="text"
+            name="marque"
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Ex: Toyota"
+          />
+        </div>
+
+        {/* Modèle */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Modèle
+          </label>
+          <input
+            type="text"
+            name="modele"
+            required
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Ex: Camry"
+          />
+        </div>
+
+        {/* Prix */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Prix par jour (FCFA)
+          </label>
+          <input
+            type="number"
+            name="prix"
+            required
+            min="0"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Ex: 25000"
+          />
+        </div>
+
+        {/* Catégorie */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Catégorie
+          </label>
+          <select
+            name="categorie"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="classique">Classique</option>
+            <option value="prestige">Prestige</option>
+            <option value="suv">SUV</option>
+          </select>
+        </div>
       </div>
 
-      {/* Modal d'édition */}
-      {isEditing && (
-        <EditVehicleModal
-          vehicle={vehicle}
-          onClose={() => setIsEditing(false)}
-          onSave={handleSaveEdit}
+      {/* Description */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Description
+        </label>
+        <textarea
+          name="description"
+          required
+          rows="3"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Description du véhicule, caractéristiques..."
         />
+      </div>
+
+      {/* Upload d'image */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Image du véhicule
+        </label>
+        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition">
+          <div className="space-y-1 text-center">
+            {imagePreview ? (
+              <div className="mb-4">
+                <Image
+                  src={imagePreview}
+                  alt="Prévisualisation"
+                  width={200}
+                  height={150}
+                  className="mx-auto rounded-lg object-cover"
+                  unoptimized={true} // Important pour les previews Base64
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImagePreview(null);
+                    setImageFile(null);
+                  }}
+                  className="mt-2 text-sm text-red-600 hover:text-red-800"
+                >
+                  Supprimer l'image
+                </button>
+              </div>
+            ) : (
+              <>
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <div className="flex text-sm text-gray-600">
+                  <label
+                    htmlFor="image-upload"
+                    className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                  >
+                    <span>Télécharger une image</span>
+                    <input
+                      id="image-upload"
+                      name="imageFile" // ← Nom important : DOIT correspondre à ce que actions.js attend
+                      type="file"
+                      accept="image/*"
+                      className="sr-only"
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                  <p className="pl-1">ou glisser-déposer</p>
+                </div>
+                <p className="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 5MB</p>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Option URL (alternative) - cachée si une image est déjà uploadée */}
+      {!imageFile && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            OU URL de l'image (si pas de téléchargement)
+          </label>
+          <input
+            type="url"
+            name="imageUrlAlt"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="https://exemple.com/image.jpg"
+            onChange={(e) => {
+              if (!imageFile) {
+                // Si pas d'image téléchargée, utiliser l'URL
+                setImagePreview(e.target.value);
+              }
+            }}
+          />
+        </div>
       )}
-    </>
+
+      <SubmitButton />
+    </form>
   );
 }
