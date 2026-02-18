@@ -29,14 +29,16 @@ export default function AdminVehicleForm() {
   const [message, setMessage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
-  const [useUrl, setUseUrl] = useState(false); // Nouvel état pour choisir entre upload et URL
+  const [useUrl, setUseUrl] = useState(false);
+  const [imageUrlInput, setImageUrlInput] = useState('');
 
   // Gérer la sélection de fichier
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImageFile(file);
-      setUseUrl(false); // On utilise l'upload, pas l'URL
+      setUseUrl(false);
+      setImageUrlInput(''); // Réinitialiser l'URL
       
       // Créer une prévisualisation
       const reader = new FileReader();
@@ -48,24 +50,20 @@ export default function AdminVehicleForm() {
   };
 
   async function handleSubmit(formData) {
-    // Supprimer toute valeur imageUrl existante
+    // Nettoyer les anciennes valeurs d'image
+    formData.delete('imageFile');
     formData.delete('imageUrl');
-    formData.delete('imageUrlAlt');
     
-    // Ajouter le fichier image au formData si présent
-    if (imageFile) {
+    if (!useUrl && imageFile) {
+      // Cas 1 : Upload de fichier
       formData.set('imageFile', imageFile);
-    }
-    
-    // Si on utilise une URL
-    if (useUrl) {
-      const imageUrlAlt = formData.get('imageUrlAlt');
-      if (imageUrlAlt && imageUrlAlt.trim() !== '') {
-        formData.set('imageUrl', imageUrlAlt);
-      } else {
-        // Si pas d'URL, image par défaut
-        formData.set('imageUrl', '/images/placeholder-car.jpg');
-      }
+    } else if (useUrl && imageUrlInput.trim() !== '') {
+      // Cas 2 : URL d'image
+      formData.set('imageUrl', imageUrlInput);
+    } else {
+      // Cas 3 : Image par défaut (optionnel, votre action gère déjà la valeur par défaut)
+      // formData.set('imageUrl', '/images/placeholder-car.jpg');
+      // On ne met rien, l'action mettra l'image par défaut
     }
 
     const result = await addVehicle(formData);
@@ -76,6 +74,7 @@ export default function AdminVehicleForm() {
       document.getElementById('vehicleForm').reset();
       setImagePreview(null);
       setImageFile(null);
+      setImageUrlInput('');
       setUseUrl(false);
     }
   }
@@ -173,6 +172,7 @@ export default function AdminVehicleForm() {
             setUseUrl(false);
             setImagePreview(null);
             setImageFile(null);
+            setImageUrlInput('');
           }}
           className={`px-4 py-2 rounded-lg transition ${
             !useUrl 
@@ -277,12 +277,14 @@ export default function AdminVehicleForm() {
           </label>
           <input
             type="url"
-            name="imageUrlAlt"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="https://exemple.com/image.jpg"
+            name="imageUrl"
+            value={imageUrlInput}
             onChange={(e) => {
+              setImageUrlInput(e.target.value);
               setImagePreview(e.target.value);
             }}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="https://exemple.com/image.jpg"
           />
           {imagePreview && (
             <div className="mt-2">
