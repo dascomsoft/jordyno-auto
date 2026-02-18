@@ -257,9 +257,6 @@
 
 
 
-
-
-
 'use client';
 
 import { motion } from 'framer-motion';
@@ -298,14 +295,14 @@ export default function HeroSection() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15 // Réduit pour mobile plus rapide
+        staggerChildren: 0.15
       }
     }
   };
 
   return (
     <div ref={containerRef} className="relative bg-gradient-to-br from-blue-900/90 via-blue-800/90 to-blue-900/90 text-white min-h-screen flex items-center overflow-hidden">
-      {/* Image de fond avec gestion responsive */}
+      {/* Image de fond */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/carjordyno.jpg"
@@ -313,13 +310,13 @@ export default function HeroSection() {
           fill
           className="object-cover"
           priority
-          quality={85} // Réduit pour mobile
+          quality={85}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/90 via-blue-800/85 to-blue-900/90"></div>
       </div>
 
-      {/* Overlay pattern subtil - caché sur mobile */}
+      {/* Overlay pattern subtil */}
       <div className="absolute inset-0 opacity-10 z-10 hidden sm:block">
         <div className="absolute inset-0" style={{
           backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
@@ -327,7 +324,7 @@ export default function HeroSection() {
         }}></div>
       </div>
 
-      {/* Cercles décoratifs - réduits et ajustés pour mobile */}
+      {/* Cercles décoratifs */}
       <motion.div
         animate={{
           scale: [1, 1.2, 1],
@@ -354,7 +351,7 @@ export default function HeroSection() {
         className="absolute -bottom-20 -left-20 w-64 sm:w-80 h-64 sm:h-80 bg-green-400 rounded-full filter blur-3xl opacity-10 z-20"
       />
 
-      {/* Contenu principal - tailles optimisées mobile */}
+      {/* Contenu principal */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-30">
         <motion.div
           variants={staggerContainer}
@@ -362,7 +359,7 @@ export default function HeroSection() {
           animate="visible"
           className="max-w-4xl mx-auto text-center"
         >
-          {/* Badge de confiance - version mobile compacte */}
+          {/* Badge de confiance */}
           <motion.div
             variants={fadeInUp}
             className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1.5 sm:px-4 sm:py-2 mb-6 sm:mb-8 border border-white/10"
@@ -373,7 +370,7 @@ export default function HeroSection() {
             </span>
           </motion.div>
 
-          {/* Titre principal - tailles réduites sur mobile */}
+          {/* Titre principal */}
           <motion.h1 
             variants={fadeInUp}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight drop-shadow-lg"
@@ -384,7 +381,7 @@ export default function HeroSection() {
             </span>
           </motion.h1>
 
-          {/* Sous-titre - réduit sur mobile */}
+          {/* Sous-titre */}
           <motion.p 
             variants={fadeInUp}
             className="text-lg sm:text-xl md:text-2xl text-blue-100 mb-6 sm:mb-8 max-w-2xl mx-auto drop-shadow px-2"
@@ -392,7 +389,7 @@ export default function HeroSection() {
             Vos déplacements en toute sécurité avec chauffeur
           </motion.p>
 
-          {/* Prix mis en avant - padding réduit sur mobile */}
+          {/* Prix mis en avant */}
           <motion.div
             variants={fadeInUp}
             className="bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 mb-8 sm:mb-10 inline-block border border-white/20 shadow-2xl mx-2 sm:mx-0"
@@ -409,7 +406,7 @@ export default function HeroSection() {
             </p>
           </motion.div>
 
-          {/* Boutons d'action - empilés sur mobile, côte à côte sur plus grand */}
+          {/* Boutons d'action */}
           <motion.div
             variants={fadeInUp}
             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 sm:px-0"
@@ -437,7 +434,7 @@ export default function HeroSection() {
             </Link>
           </motion.div>
 
-          {/* Indicateurs de confiance - responsive grid */}
+          {/* Indicateurs de confiance */}
           <motion.div
             variants={fadeInUp}
             className="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-2 sm:gap-6 mt-8 sm:mt-12 px-2"
@@ -461,7 +458,7 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Vague décorative - adaptée mobile */}
+      {/* Vague décorative */}
       <div className="absolute bottom-0 left-0 right-0 z-20">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="w-full h-auto fill-white opacity-90" preserveAspectRatio="none">
           <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"/>
