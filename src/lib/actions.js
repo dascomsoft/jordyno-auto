@@ -39,8 +39,7 @@ export async function getFeaturedVehicles() {
   }
 }
 
-
-// Ajouter un nouveau véhicule - Version corrigée
+// Ajouter un nouveau véhicule - Version compatible avec votre formulaire
 export async function addVehicle(formData) {
   await checkAdmin();
   
@@ -57,22 +56,23 @@ export async function addVehicle(formData) {
       return { success: false, message: 'Tous les champs sont obligatoires' };
     }
 
-    // Gérer l'image - On utilise UN SEUL champ "image" du formulaire
+    // Gérer l'image - Adapté à votre formulaire
     let imageData = null;
     let imageUrl = null;
     
-    const imageField = formData.get('image');
+    const imageFile = formData.get('imageFile');
+    const imageUrlInput = formData.get('imageUrl');
     
-    if (imageField && typeof imageField === 'object' && imageField.size > 0) {
+    if (imageFile && imageFile.size > 0) {
       // C'est un fichier uploadé → le convertir en Base64 pour image_data
-      const bytes = await imageField.arrayBuffer();
+      const bytes = await imageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const base64 = buffer.toString('base64');
-      imageData = `data:${imageField.type};base64,${base64}`;
+      imageData = `data:${imageFile.type};base64,${base64}`;
       console.log('Image uploadée convertie en Base64');
-    } else if (imageField && typeof imageField === 'string' && imageField.trim() !== '') {
+    } else if (imageUrlInput && imageUrlInput.trim() !== '') {
       // C'est une URL
-      imageUrl = imageField;
+      imageUrl = imageUrlInput;
       console.log('URL d\'image fournie:', imageUrl);
     } else {
       // Image par défaut
@@ -81,7 +81,6 @@ export async function addVehicle(formData) {
     }
 
     // CRÉER L'OBJET AVEC LES COLONNES NÉCESSAIRES
-    // created_at est automatiquement géré par $defaultFn
     const newVehicle = {
       marque: marque,
       modele: modele,
@@ -90,8 +89,7 @@ export async function addVehicle(formData) {
       categorie: categorie,
       image_data: imageData,
       image_url: imageUrl,
-      // 👇 SUPPRIMEZ cette ligne
-      // created_at: Math.floor(Date.now() / 1000),
+      // created_at est automatiquement géré par $defaultFn
     };
 
     console.log('Insertion du véhicule:', newVehicle);
