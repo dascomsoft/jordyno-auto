@@ -38,7 +38,6 @@ export async function getFeaturedVehicles() {
     return [];
   }
 }
-
 // Ajouter un nouveau véhicule - Version corrigée
 export async function addVehicle(formData) {
   await checkAdmin();
@@ -88,7 +87,7 @@ export async function addVehicle(formData) {
       categorie: categorie,
       image_data: imageData,
       image_url: imageUrl,
-      created_at: Math.floor(Date.now() / 1000), // Timestamp UNIX en secondes
+      created_at: Math.floor(Date.now() / 1000), // Timestamp UNIX en secondes (nombre)
     };
 
     console.log('Insertion du véhicule:', newVehicle);
