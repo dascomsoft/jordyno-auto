@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { motion } from 'framer-motion';
@@ -48,35 +46,28 @@ export default function AdminVehicleForm() {
   };
 
   async function handleSubmit(formData) {
-    // Ajouter l'image au formData si elle existe
+    // 🔴 CORRECTION : Supprimer l'imageUrl du formData si elle existe
+    formData.delete('imageUrl');
+    
+    // Ajouter le fichier image au formData si présent
     if (imageFile) {
-      // Convertir l'image en Base64 pour l'envoyer
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64Image = reader.result;
-        formData.set('imageUrl', base64Image);
-        
-        const result = await addVehicle(formData);
-        setMessage(result);
-        
-        if (result.success) {
-          // Réinitialiser le formulaire
-          document.getElementById('vehicleForm').reset();
-          setImagePreview(null);
-          setImageFile(null);
-        }
-      };
-      reader.readAsDataURL(imageFile);
-    } else {
-      // Si pas d'image, utiliser l'URL (optionnel)
-      const result = await addVehicle(formData);
-      setMessage(result);
-      
-      if (result.success) {
-        document.getElementById('vehicleForm').reset();
-        setImagePreview(null);
-        setImageFile(null);
-      }
+      formData.set('imageFile', imageFile); // ← C'est la clé attendue par actions.js
+    }
+
+    // Si une URL alternative est fournie, l'ajouter
+    const imageUrlAlt = formData.get('imageUrlAlt');
+    if (imageUrlAlt && imageUrlAlt.trim() !== '') {
+      formData.set('imageUrl', imageUrlAlt);
+    }
+
+    const result = await addVehicle(formData);
+    setMessage(result);
+    
+    if (result.success) {
+      // Réinitialiser le formulaire
+      document.getElementById('vehicleForm').reset();
+      setImagePreview(null);
+      setImageFile(null);
     }
   }
 
@@ -180,6 +171,7 @@ export default function AdminVehicleForm() {
                   width={200}
                   height={150}
                   className="mx-auto rounded-lg object-cover"
+                  unoptimized={true} // Important pour les previews Base64
                 />
                 <button
                   type="button"
@@ -216,7 +208,7 @@ export default function AdminVehicleForm() {
                     <span>Télécharger une image</span>
                     <input
                       id="image-upload"
-                      name="imageFile"
+                      name="imageFile" // ← Nom important
                       type="file"
                       accept="image/*"
                       className="sr-only"
@@ -230,7 +222,6 @@ export default function AdminVehicleForm() {
             )}
           </div>
         </div>
-        <input type="hidden" name="imageUrl" value={imagePreview || ''} />
       </div>
 
       {/* Option URL (alternative) */}
@@ -240,7 +231,7 @@ export default function AdminVehicleForm() {
         </label>
         <input
           type="url"
-          name="imageUrlAlt"
+          name="imageUrlAlt" // ← Nom important
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="https://exemple.com/image.jpg"
           onChange={(e) => {
