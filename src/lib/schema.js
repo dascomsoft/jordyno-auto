@@ -27,7 +27,6 @@
 
 
 
-
 // Schéma de la base de données pour les véhicules
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 

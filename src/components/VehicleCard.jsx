@@ -249,42 +249,21 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 'use client';
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function VehicleCard({ vehicle, index = 0 }) {
   const cardRef = useRef(null);
+  const [isImageError, setIsImageError] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Animation simple avec Intersection Observer
+    setIsClient(true);
+    
+    // Animation avec Intersection Observer
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -304,7 +283,18 @@ export default function VehicleCard({ vehicle, index = 0 }) {
     return () => observer.disconnect();
   }, []);
 
-  const imageSrc = vehicle.image_data || vehicle.image_url || '/images/placeholder-car.jpg';
+  // Gestion des erreurs d'image
+  const handleImageError = () => {
+    setIsImageError(true);
+  };
+
+  // Déterminer la source de l'image avec fallback
+  const getImageSrc = () => {
+    if (isImageError) return '/images/placeholder-car.jpg';
+    return vehicle.image_data || vehicle.image_url || '/images/placeholder-car.jpg';
+  };
+
+  const imageSrc = getImageSrc();
 
   const handleWhatsAppReservation = () => {
     const message = encodeURIComponent(
@@ -313,38 +303,53 @@ export default function VehicleCard({ vehicle, index = 0 }) {
     window.open(`https://wa.me/237673342789?text=${message}`, '_blank');
   };
 
+  // Formatage du prix avec espace comme séparateur de milliers
+  const formattedPrice = vehicle.prix?.toLocaleString('fr-FR') || '0';
+
   return (
     <motion.div
       ref={cardRef}
       whileHover={{ scale: 1.05 }}
       transition={{ type: 'spring', stiffness: 300 }}
-      className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 opacity-0 translate-y-10 transition-all duration-700"
+      className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 opacity-0 translate-y-10 transition-all duration-700 hover:shadow-2xl"
     >
-      {/* Image du véhicule */}
-      <div className="relative h-48 w-full bg-gray-200">
+      {/* Image du véhicule avec gestion d'erreur */}
+      <div className="relative h-48 w-full bg-gray-200 overflow-hidden">
         <Image
           src={imageSrc}
-          alt={`${vehicle.marque} ${vehicle.modele}`}
+          alt={`${vehicle.marque || 'Véhicule'} ${vehicle.modele || ''}`}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-500 hover:scale-110"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           unoptimized={!!vehicle.image_data}
+          onError={handleImageError}
+          priority={index < 3} // Charge en priorité les 3 premières images
         />
+        
+        {/* Badge "Nouveau" pour les véhicules récents (optionnel) */}
+        {index === 0 && (
+          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+            Nouveau
+          </span>
+        )}
       </div>
 
       {/* Détails du véhicule */}
       <div className="p-5">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-bold text-gray-800">
-            {vehicle.marque} {vehicle.modele}
+            {vehicle.marque || 'Marque inconnue'} {vehicle.modele || ''}
           </h3>
-          <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-            {vehicle.prix.toLocaleString()} FCFA/jour
+          <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ml-2">
+            {formattedPrice} FCFA/jour
           </span>
         </div>
 
-        <p className="text-gray-600 mb-4 line-clamp-2">{vehicle.description}</p>
+        <p className="text-gray-600 mb-4 line-clamp-2 min-h-[3rem]">
+          {vehicle.description || 'Aucune description disponible.'}
+        </p>
 
+        {/* Badge catégorie */}
         <div className="mb-4">
           <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
             vehicle.categorie === 'prestige' ? 'bg-purple-100 text-purple-800' :
@@ -352,20 +357,25 @@ export default function VehicleCard({ vehicle, index = 0 }) {
             'bg-blue-100 text-blue-800'
           }`}>
             {vehicle.categorie === 'prestige' ? 'Prestige' :
-             vehicle.categorie === 'suv' ? 'SUV' : 'Classique'}
+             vehicle.categorie === 'suv' ? 'SUV' : 
+             vehicle.categorie || 'Classique'}
           </span>
         </div>
 
+        {/* Bouton réservation */}
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleWhatsAppReservation}
-          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2"
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-2 group"
         >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771z"/>
+          <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.087-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.072.043.419-.101.824z"/>
           </svg>
-          Réserver via WhatsApp
+          <span>Réserver via WhatsApp</span>
+          <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
         </motion.button>
       </div>
     </motion.div>
