@@ -22,7 +22,7 @@ export default function AdminHeader() {
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-sm">J</span>
               </div>
-              <span className="font-bold text-gray-800">Admin Jordyno Auto</span>
+              <span className="font-bold text-gray-800">Admin Rodrigo Auto</span>
             </div>
 
             {/* Navigation admin */}

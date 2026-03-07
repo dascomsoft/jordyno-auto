@@ -11,7 +11,7 @@ const nunito = Nunito({
 });
 
 export const metadata = {
-  title: 'Jordyno Auto Rent - Location de voitures à Yaoundé',
+  title: 'Rodrigo Auto Rent | Car Glass Repair - Location de voitures à Yaoundé',
   description: 'Location de voitures avec chauffeur à Yaoundé. Modèles récents et propres dès 20 000 FCFA/jour.',
   manifest: '/manifest.json',
   themeColor: '#1e3a8a',

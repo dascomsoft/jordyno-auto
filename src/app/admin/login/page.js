@@ -119,7 +119,7 @@ export default function AdminLoginPage() {
           <p className="text-xs sm:text-sm text-blue-700 text-center">
             <span className="font-semibold">Identifiants par défaut :</span>
             <br />
-            admin@jordyno.com / Jordyno2024!
+            admin@rodrigo.com / rodrigo2026
           </p>
         </div>
 

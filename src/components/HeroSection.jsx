@@ -279,7 +279,7 @@ export default function HeroSection() {
     const message = encodeURIComponent(
       "Bonjour, je souhaite réserver un véhicule chez Jordyno Auto Rent."
     );
-    window.open(`https://wa.me/237673342789?text=${message}`, '_blank');
+    window.open(`https://wa.me/237694648230?text=${message}`, '_blank');
   };
 
   // Variantes d'animation
@@ -373,7 +373,7 @@ export default function HeroSection() {
             variants={fadeInUp}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight drop-shadow-lg"
           >
-            <span className="block">Jordyno</span>
+            <span className="block">Rodrigo</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-green-300 drop-shadow-lg text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
               Auto Rent
             </span>

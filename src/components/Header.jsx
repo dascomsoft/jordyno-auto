@@ -31,14 +31,14 @@ export default function Header() {
           <Link href="/" className="flex items-center space-x-2">
             <div className="relative w-16 h-8">
               <Image
-                src="/images/jordynologo.jpg"
+                src="/images/rodrigologo.png"
                 alt="Logo"
                 fill
                 className="object-cover rounded"
               />
             </div>
             <span className="font-bold text-lg text-gray-800">
-              Jordyno Auto
+              Rodrigo Auto
             </span>
           </Link>
 
@@ -60,7 +60,7 @@ export default function Header() {
 
             {/* Bouton Contact */}
             <a
-              href="https://wa.me/237673342789"
+              href="https://wa.me/237694648230"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
@@ -115,7 +115,7 @@ export default function Header() {
                 ))}
 
                 <a
-                  href="https://wa.me/237673342789"
+                  href="https://wa.me/237694648230"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-green-600 text-white text-center py-2 rounded-lg hover:bg-green-700 transition"

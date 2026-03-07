@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* À propos */}
           <div>
-            <h3 className="text-xl font-bold mb-4">Jordyno Auto Rent</h3>
+            <h3 className="text-xl font-bold mb-4">Rodrigo Auto Rent</h3>
             <p className="text-gray-400 mb-4">
               Votre partenaire de confiance pour la location de véhicules avec chauffeur à Yaoundé.
             </p>
@@ -68,7 +68,7 @@ export default function Footer() {
                 <svg className="w-5 h-5 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <span>+237 673 342 789</span>
+                <span>+237 694648230</span>
               </li>
             </ul>
           </div>
